@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>DSH 插件 · Zara 的小站</title>
+  <meta name="description" content="面向 DeepSeek Harness（DSH）的自研插件集合：记忆、检索与本地优先的数据管道。">
+  <link rel="stylesheet" href="assets/site.css">
+</head>
+<body>
+<div class="wrap">
+
+  <header class="site">
+    <div class="mark">DS</div>
+    <div class="who">DSH 插件
+      <small>Plugins for DeepSeek Harness · by kittitys</small>
+    </div>
+  </header>
+
+  <h1>给 DeepSeek Harness 写的插件</h1>
+  <p class="lede">这里放我自己在用的 DSH 插件：数据尽量留在本地，装了就忘，出问题能降级。</p>
+
+  <div class="badges">
+    <span class="badge on">本地优先</span>
+    <span class="badge on">开源 MIT</span>
+    <span class="badge">中文生态</span>
+    <span class="badge">持续维护中</span>
+  </div>
+
+  <h2>插件列表</h2>
+
+  <div class="card">
+    <h3><a href="dsh-mem0-memory/">dsh-mem0-memory</a> <span class="muted small">· 记忆</span></h3>
+    <p>把会话记忆自动存进本地的 mem0 向量库，新会话自动召回——换对话不再失忆。含插件本体、导入/搜索 CLI 与本地服务三件套。</p>
+    <div class="badges">
+      <span class="badge">混合检索</span>
+      <span class="badge">增量导入</span>
+      <span class="badge">数据本地</span>
+      <span class="badge">故障降级</span>
+    </div>
+    <div class="links">
+      <a class="btn primary" href="dsh-mem0-memory/">查看详情</a>
+      <a class="btn" href="https://github.com/kittitys/dsh-mem0-memory">GitHub</a>
+      <a class="btn" href="https://www.npmjs.com/package/dsh-mem0-memory">npm</a>
+    </div>
+  </div>
+
+  <h2>关于这个站</h2>
+  <p class="small muted">
+    这个域名下每个插件一个页面，插件页面的地址就是它在插件市场里登记的官网地址。
+    站点是纯静态页面，没有脚本、没有追踪、没有第三方字体。
+  </p>
+
+  <hr>
+
+  <footer class="site">
+    <span>© 2026 kittitys · MIT</span>
+    <nav>
+      <a href="https://github.com/kittitys">GitHub</a>
+      <a href="https://cordis.run">在 cordis.run 上查看</a>
+    </nav>
+  </footer>
+
+</div>
+</body>
+</html>

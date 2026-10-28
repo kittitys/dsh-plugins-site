@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>dsh-mem0-memory · DSH 记忆插件</title>
+  <meta name="description" content="把会话记忆自动存进本地 mem0 向量库，新会话自动召回。DeepSeek Harness 插件，中文优化、数据本地、增量导入。">
+  <link rel="stylesheet" href="../assets/site.css">
+</head>
+<body>
+<div class="wrap">
+
+  <header class="site">
+    <div class="mark">DS</div>
+    <div class="who">DSH 插件
+      <small><a href="../">← 返回插件列表</a></small>
+    </div>
+  </header>
+
+  <h1>dsh-mem0-memory</h1>
+  <p class="lede">
+    把会话记忆自动存进<strong>本地</strong>的 mem0 向量库，新会话自动召回——
+    换对话不再失忆。插件本体 + 导入/搜索 CLI + 本地服务，三件套一起装。
+  </p>
+
+  <div class="badges">
+    <span class="badge on">v0.1.6</span>
+    <span class="badge on">MIT</span>
+    <span class="badge">DSH 0.1.x / 0.2.x</span>
+    <span class="badge">中文优化</span>
+    <span class="badge">数据本地</span>
+  </div>
+
+  <div class="links">
+    <a class="btn primary" href="https://www.npmjs.com/package/dsh-mem0-memory">npm</a>
+    <a class="btn" href="https://github.com/kittitys/dsh-mem0-memory">GitHub</a>
+    <a class="btn" href="https://github.com/kittitys/dsh-mem0-memory/blob/master/README.md">README</a>
+    <a class="btn" href="https://github.com/kittitys/dsh-mem0-memory/releases">Releases</a>
+  </div>
+
+  <h2>它解决什么问题</h2>
+  <p>
+    Agent 的记忆通常活不过一次会话。这个插件在每一轮对话前，把与当前问题相关的旧记忆召回并注入上下文；
+    在会话结束时，把新增内容增量写回本地记忆库。你不需要改变使用习惯——装上、重启一次 DSH，它就在后台工作。
+  </p>
+
+  <h2>特点</h2>
+  <div class="grid">
+    <div class="card">
+      <h3>混合检索</h3>
+      <p class="small muted">语义向量 + 关键词 BM25 双通道。意思相近的和字面对得上的，都能捞回来。</p>
+    </div>
+    <div class="card">
+      <h3>中文开箱即用</h3>
+      <p class="small muted">jieba 分词 + 按输入语言提取事实 + DeepSeek 适配补丁；补丁是运行时挂载，不改 mem0 安装，升级不丢。</p>
+    </div>
+    <div class="card">
+      <h3>增量导入</h3>
+      <p class="small muted">按会话记录 checkpoint，只处理新增内容，不重复烧 token。</p>
+    </div>
+    <div class="card">
+      <h3>数据留在本地</h3>
+      <p class="small muted">记忆库（Qdrant + SQLite）完全在你自己的磁盘上，个人数据不上云。</p>
+    </div>
+    <div class="card">
+      <h3>故障可降级</h3>
+      <p class="small muted">记忆服务挂掉不影响聊天；embedding 服务抖动时自动降级为关键词检索，并在注入块里标注。</p>
+    </div>
+    <div class="card">
+      <h3>工作区隔离</h3>
+      <p class="small muted">标记为 <code>0_</code> 的工作区不入库也不召回——目录名、配置名单、或在界面里改的工作区标题都算。</p>
+    </div>
+  </div>
+
+  <h2>安装</h2>
+  <pre><code># 1) 装进当前 DSH profile（web）
+dsh plugin --profile web add dsh-mem0-memory
+
+# 2) 初始化记忆服务（首次）
+npx dsh-mem0-memory-setup --init
+
+# 3) 重启 DSH web —— 之后每轮对话自动召回、每次结束自动写回</code></pre>
+  <p class="small muted">
+    首次导入历史会话：<code>dsh-mem0-import --since-last</code>；
+    主动搜索记忆：<code>dsh-mem0-search "关键词"</code>。完整说明见
+    <a href="https://github.com/kittitys/dsh-mem0-memory#readme">README</a>。
+  </p>
+
+  <h2>兼容性</h2>
+  <table>
+    <tr><th>DSH 版本</th><th>状态</th></tr>
+    <tr><td>0.1.5-rc.3</td><td>已验证</td></tr>
+    <tr><td>0.2.1-rc.2 及后续 0.2.x</td><td>已验证（含 0.2.x 新的会话转录格式）</td></tr>
+    <tr><td>0.3.x 起</td><td>尚未验证，安装前请先确认插件已跟进</td></tr>
+  </table>
+  <p class="small muted">
+    DSH 0.2.1 起底座会做插件兼容性硬校验，peer 版本不在范围内会被直接拒绝安装——这是设计如此，不是 bug。
+  </p>
+
+  <h2>技术底色</h2>
+  <ul class="small muted">
+    <li>记忆引擎：<a href="https://github.com/mem0ai/mem0">mem0</a>（本地向量库 Qdrant + SQLite 历史表）</li>
+    <li>召回时机：<code>agent/pre-step</code> 钩子，同步注入；单次 HTTP 查询，无多轮 agent 循环</li>
+    <li>零第三方 JS 依赖：插件本身不引入任何 npm 依赖，只调本地 HTTP</li>
+    <li>导入来源：DSH 自己的会话转录（zstd 压缩的 JSONL），解析后按批次写入</li>
+  </ul>
+
+  <hr>
+
+  <footer class="site">
+    <span>dsh-mem0-memory · MIT · © 2026 kittitys</span>
+    <nav>
+      <a href="../">其他插件</a>
+      <a href="https://cordis.run">本插件在 cordis.run 的收录页</a>
+    </nav>
+  </footer>
+
+</div>
+</body>
+</html>
